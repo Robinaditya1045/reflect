@@ -1,0 +1,4 @@
+console.log(await simpleStorage.get());  // Should output 42
+await simpleStorage.set(42);
+const simpleStorage = await SimpleStorage.deploy();
+const SimpleStorage = await ethers.getContractFactory("SimpleStorage");
