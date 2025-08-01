@@ -1,23 +1,73 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+// Add enums for player actions and game status
+enum PlayerAction {
+  GRAB
+  SHARE
+  UNDECIDED // Default state before player makes a choice
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = "postgresql://postgres:mysecretpassword@localhost:5432/postgres"
+enum GameStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum GameOutcome {
+  GRAB_GRAB
+  GRAB_SHARE
+  SHARE_GRAB
+  SHARE_SHARE
 }
 
 model User {
-  id            String   @id @default(uuid())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  walletAddress String   @unique
+  id            String       @id @default(uuid())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  walletAddress String       @unique
   username      String?
+  ownedGames    Game[]
+  playerGames   PlayerGame[]
+  stakes        Stake[]
+}
+
+model Game {
+  id            Int          @id @default(autoincrement())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  name          String
+  description   String?
+  owner         User         @relation(fields: [ownerId], references: [id])
+  ownerId       String
+  joiningAmount Float        // Amount each player must pay to join
+  status        GameStatus   @default(PENDING)
+  finalOutcome  GameOutcome? // Set when game is completed
+  players       PlayerGame[]
+  stakes        Stake[]
+  totalPool     Float        @default(0) // Total amount in the game pool
+}
+
+model PlayerGame {
+  id        String       @id @default(uuid())
+  user      User         @relation(fields: [userId], references: [id])
+  userId    String
+  game      Game         @relation(fields: [gameId], references: [id])
+  gameId    Int
+  action    PlayerAction @default(UNDECIDED)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@unique([userId, gameId])
+}
+
+model Stake {
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  user         User        @relation(fields: [userId], references: [id])
+  userId       String
+  game         Game        @relation(fields: [gameId], references: [id])
+  gameId       Int
+  amount       Float
+  betOutcome   GameOutcome // What outcome the staker is betting on
+  
+  @@index([gameId, betOutcome]) // Index for faster queries
 }
