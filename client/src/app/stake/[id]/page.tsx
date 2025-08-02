@@ -43,6 +43,27 @@ export default function Page({ params }: PageProps) {
     const costPerStake = 0.01; // ETH
     const totalCost = (option1Count + option2Count + option3Count + option4Count) * costPerStake;
 
+      const [TopG, setTopG] = useState<any>(null);
+    useEffect(() => {
+    const init = async () => {
+      if (window.ethereum) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+
+        const contractInstance5 = new ethers.Contract(
+          TopGAddress.address,
+          TopGAbi.abi,
+          signer
+        );
+        setTopG(contractInstance5);
+      } else {
+        alert('MetaMask not detected. Please install MetaMask.');
+      }
+    };
+
+    init();
+  }, []);
+
     // Fetch players data from the database using server action
     useEffect(() => {
         const fetchPlayers = async () => {
@@ -133,23 +154,15 @@ export default function Page({ params }: PageProps) {
             
             // Connect to wallet using provider
             // @ts-ignore - BrowserProvider exists in ethers v6
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
-            
-            // Connect to contract
-            const contract = new ethers.Contract(
-                TopGAddress.address,
-                TopGAbi.abi,
-                signer
-            );
-            
             // Convert ETH to Wei
-            // @ts-ignore - parseEther exists in ethers v6
-            const amountInWei = ethers.parseEther(totalCost.toString());
+            const amountInWei = ethers.utils.parseEther(totalCost.toString());
             
+            let totalSum = option1Count + option2Count + option3Count + option4Count;
+
+            const totalSuminWei = ethers.utils.parseEther(totalSum.toString());
             // Call contract stake function
-            const tx = await contract.stake(parseInt(params.id), {
-                value: amountInWei
+            const tx = await TopG.bet(option1Count, option2Count, option3Count, option4Count, {
+                value: totalSum
             });
             
             // Wait for transaction to be mined
