@@ -187,12 +187,12 @@ export default function Page({ params }: PageProps) {
         title: string, 
         description: string
     ) => (
-        <Card className="mb-4">
+        <Card className="mb-4 bg-gray-900">
             <CardHeader>
-                <CardTitle>{title}</CardTitle>
+                <CardTitle className="text-white">{title}</CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">{description}</p>
+                <p className="text-sm text-white mb-4">{description}</p>
                 <div className="flex items-center gap-4">
                     <Button 
                         variant="outline" 
@@ -201,7 +201,7 @@ export default function Page({ params }: PageProps) {
                     >
                         -
                     </Button>
-                    <span className="text-xl font-bold">{count}</span>
+                    <span className="text-xl font-bold text-white">{count}</span>
                     <Button 
                         variant="outline"
                         onClick={() => handleIncrement(option)}

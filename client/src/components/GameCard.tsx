@@ -30,7 +30,6 @@ const GameCard: React.FC<GameCardProps> = ({
   totalPool = 0,
   status = 'PENDING',
 }) => {
-  const [TopG, setTopG] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [joinType, setJoinType] = useState<'player' | 'staker' | null>(null);
   const [isJoining, setIsJoining] = useState(false);
@@ -47,7 +46,8 @@ const GameCard: React.FC<GameCardProps> = ({
   const [localStakerCount, setLocalStakerCount] = useState(stakerCount);
   const [localIsPlayersFull, setLocalIsPlayersFull] = useState(isPlayersFull || playerCount >= 2);
   const [localTotalPool, setLocalTotalPool] = useState(totalPool);
-
+  
+  const [TopG, setTopG] = useState<any>(null);
   useEffect(() => {
     const init = async () => {
       if (window.ethereum) {

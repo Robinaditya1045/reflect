@@ -36,6 +36,28 @@ export default function Page({ params }: PageProps) {
     const [isCurrentPlayer, setIsCurrentPlayer] = useState(false);
     const [playerIndex, setPlayerIndex] = useState<number | null>(null); // 0 for player1, 1 for player2
 
+
+      const [TopG, setTopG] = useState<any>(null);
+  useEffect(() => {
+    const init = async () => {
+      if (window.ethereum) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+
+        const contractInstance5 = new ethers.Contract(
+          TopGAddress.address,
+          TopGAbi.abi,
+          signer
+        );
+        setTopG(contractInstance5);
+      } else {
+        alert('MetaMask not detected. Please install MetaMask.');
+      }
+    };
+
+    init();
+  }, []);
+
     // Fetch players data from the database using server action
     useEffect(() => {
         const fetchPlayers = async () => {
@@ -119,22 +141,13 @@ export default function Page({ params }: PageProps) {
             setPlayerChoice(choice);
             
             // Get provider and signer
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
-            
-            // Create contract instance
-            const contract = new ethers.Contract(
-                TopGAddress.address,
-                TopGAbi.abi,
-                signer
-            );
             
             // Call the appropriate function based on player index (0 = player1, 1 = player2)
             let tx;
             if (playerIndex === 0) {
-                tx = await contract.update_choice1(choice);
+                tx = await TopG.update_choice1(choice);
             } else {
-                tx = await contract.update_choice2(choice);
+                tx = await TopG.update_choice2(choice);
             }
             
             // Wait for transaction to be mined
