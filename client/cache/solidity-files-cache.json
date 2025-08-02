@@ -1,10 +1,10 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/home/robin/code/test_hardhat/src/web3_contracts/contracts/SimpleStorage.sol": {
-      "lastModificationDate": 1727822961930,
+    "/home/robin/code/web3/reflect/client/contracts/SimpleStorage.sol": {
+      "lastModificationDate": 1754076648768,
       "contentHash": "3878740ed6a6d72389264ff37eeca1c1",
-      "sourceName": "src/web3_contracts/contracts/SimpleStorage.sol",
+      "sourceName": "contracts/SimpleStorage.sol",
       "solcConfig": {
         "version": "0.8.18",
         "settings": {
@@ -34,6 +34,41 @@
       ],
       "artifacts": [
         "SimpleStorage"
+      ]
+    },
+    "/home/robin/code/web3/reflect/client/contracts/TopG.sol": {
+      "lastModificationDate": 1754087947521,
+      "contentHash": "8c41de51137a3100662f7eeca7c5de91",
+      "sourceName": "contracts/TopG.sol",
+      "solcConfig": {
+        "version": "0.8.18",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.17"
+      ],
+      "artifacts": [
+        "TopG"
       ]
     }
   }

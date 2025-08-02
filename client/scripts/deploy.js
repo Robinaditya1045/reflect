@@ -2,12 +2,12 @@ const path = require("path");
 const fs = require("fs");
 
 async function main() {
-  const SimpleStorage = await ethers.getContractFactory("SimpleStorage");
-  const simpleStorage = await SimpleStorage.deploy();
+  const TopG = await ethers.getContractFactory("TopG");
+  const simpleStorage = await TopG.deploy();
 
   await simpleStorage.deployed();
-  console.log("SimpleStorage deployed to:", simpleStorage.address);
-  saveFrontendFiles(simpleStorage, "SimpleStorage");
+  console.log("TopG deployed to:", simpleStorage.address);
+  saveFrontendFiles(simpleStorage, "TopG");
 }
 
 function saveFrontendFiles(contract, name) {

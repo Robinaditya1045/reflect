@@ -7,7 +7,7 @@ const path = require('path');
 module.exports = {
   solidity: "0.8.18",
   paths: {
-    sources: "./",  // Contract source directory
+    sources: "./contracts",  // Contract source directory
     tests: "./test",         // Test files directory
     cache: "./cache",        // Cache directory
     artifacts: "./artifacts" // Compiled artifacts directory
