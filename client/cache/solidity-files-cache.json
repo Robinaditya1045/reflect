@@ -37,8 +37,8 @@
       ]
     },
     "/home/robin/code/web3/reflect/client/contracts/TopG.sol": {
-      "lastModificationDate": 1754087947521,
-      "contentHash": "8c41de51137a3100662f7eeca7c5de91",
+      "lastModificationDate": 1754136277697,
+      "contentHash": "4b49b4715e65a8309ec86bd7f4d19e0f",
       "sourceName": "contracts/TopG.sol",
       "solcConfig": {
         "version": "0.8.18",

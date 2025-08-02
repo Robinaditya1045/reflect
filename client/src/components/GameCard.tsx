@@ -5,6 +5,9 @@ import { cn } from '@/lib/utils';
 import { joinAsPlayer, joinAsStaker } from '@/lib/actions/game.actions';
 import { getUserByWalletAddress } from '@/lib/actions/user.actions';
 import { ConnectModal } from './ui/ConnectModal';
+import { ethers } from 'ethers';
+import TopGAddress from '@contract_data/TopG-address.json';
+import TopGAbi from '@contract_data/TopG.json';
 
 interface GameCardProps {
   id: number;
@@ -27,6 +30,7 @@ const GameCard: React.FC<GameCardProps> = ({
   totalPool = 0,
   status = 'PENDING',
 }) => {
+  const [TopG, setTopG] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [joinType, setJoinType] = useState<'player' | 'staker' | null>(null);
   const [isJoining, setIsJoining] = useState(false);
@@ -43,6 +47,26 @@ const GameCard: React.FC<GameCardProps> = ({
   const [localStakerCount, setLocalStakerCount] = useState(stakerCount);
   const [localIsPlayersFull, setLocalIsPlayersFull] = useState(isPlayersFull || playerCount >= 2);
   const [localTotalPool, setLocalTotalPool] = useState(totalPool);
+
+  useEffect(() => {
+    const init = async () => {
+      if (window.ethereum) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+
+        const contractInstance5 = new ethers.Contract(
+          TopGAddress.address,
+          TopGAbi.abi,
+          signer
+        );
+        setTopG(contractInstance5);
+      } else {
+        alert('MetaMask not detected. Please install MetaMask.');
+      }
+    };
+
+    init();
+  }, []);
 
   // Check localStorage for wallet connection on component mount
   useEffect(() => {
@@ -135,6 +159,9 @@ const GameCard: React.FC<GameCardProps> = ({
           return;
         }
         
+        // contract call
+        const tx = await TopG.register();
+        await tx.wait();
         await joinAsPlayer(id, user.id, joiningAmount);
         setHasJoined(prev => ({ ...prev, asPlayer: true }));
         

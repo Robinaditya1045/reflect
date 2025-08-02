@@ -45,7 +45,7 @@ contract TopG {
     bool full = false;
     function register() payable public{
         require(check<2, "Event full");
-        require(msg.value==50000000000000000, "More stake required");
+        // require(msg.value==50000000000000000, "More stake required");
         if(check==0) player1 = msg.sender;
         else player2 = msg.sender;
         check++;

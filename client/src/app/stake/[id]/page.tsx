@@ -100,10 +100,87 @@ export default function Page({ params }: PageProps) {
     };
 
     const handleStake = async () => {
-        // Your existing handleStake implementation
-        // ...
+        if (totalCost <= 0) {
+            setError("You must select at least one option");
+            return;
+        }
+        
+        // Check if wallet is connected
+        if (!walletAddress || !isOnboarded) {
+            setIsModalOpen(true);
+            return;
+        }
+        
+        setIsSubmitting(true);
+        setError("");
+        
+        try {
+            // Get user from wallet address
+            const user = await getUserByWalletAddress(walletAddress);
+            
+            // Create a stake distribution object
+            const stakeDistribution = {
+                gameId: parseInt(params.id),
+                userId: user.id,
+                options: {
+                    GRAB_GRAB: option1Count,
+                    GRAB_SHARE: option2Count,
+                    SHARE_GRAB: option3Count,
+                    SHARE_SHARE: option4Count
+                },
+                totalAmount: totalCost
+            };
+            
+            // Connect to wallet using provider
+            // @ts-ignore - BrowserProvider exists in ethers v6
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            
+            // Connect to contract
+            const contract = new ethers.Contract(
+                TopGAddress.address,
+                TopGAbi.abi,
+                signer
+            );
+            
+            // Convert ETH to Wei
+            // @ts-ignore - parseEther exists in ethers v6
+            const amountInWei = ethers.parseEther(totalCost.toString());
+            
+            // Call contract stake function
+            const tx = await contract.stake(parseInt(params.id), {
+                value: amountInWei
+            });
+            
+            // Wait for transaction to be mined
+            await tx.wait();
+            
+            // Reset form after successful stake
+            setOption1Count(0);
+            setOption2Count(0);
+            setOption3Count(0);
+            setOption4Count(0);
+            
+            // Notify success
+            alert("Stake placed successfully!");
+            
+        } catch (err: any) {
+            console.error("Error staking:", err);
+            setError(err.message || "Failed to place stake");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
-
+    
+    const handleConnectSuccess = (address: string, username: string | null, onboarded: boolean) => {
+        setWalletAddress(address);
+        setIsOnboarded(onboarded);
+        
+        if (onboarded) {
+            handleStake();
+        }
+    };
+    
     const renderOption = (
         option: number, 
         count: number, 
@@ -172,7 +249,6 @@ export default function Page({ params }: PageProps) {
                 `Both players choose to share the prize`
             )}
             
-            {/* Rest of your component remains the same */}
             <Card className="mt-6">
                 <CardContent className="pt-6">
                     <div className="flex justify-between mb-4">
@@ -196,6 +272,13 @@ export default function Page({ params }: PageProps) {
             >
                 {isSubmitting ? "Processing..." : `Stake ${totalCost} ETH`}
             </Button>
+            
+            {/* Connect Modal */}
+            <ConnectModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                onConnect={handleConnectSuccess} 
+            />
         </div>
     );
 }
